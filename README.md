@@ -17,7 +17,24 @@
 # pip install fastapi uvicorn
 -> Install FastAPI and a server (like Uvicorn)
 
-# ------------------------------------------------------------------------------------------------------
+# uvicorn main:app --reload
+-> To start your FastAPI application with Uvicorn
+
+# uvicorn main:app --reload --port 8080
+->To specify a port:
+
+🔑 Explanation
+main → the filename of your Python script (main.py).
+
+app → the FastAPI instance inside that file (app = FastAPI()).
+
+--reload → enables auto-reload, so the server restarts whenever you change your code (great for development).
+
+immediately after running this command  folder (__pycache__) and the file inside (main.cpython-313.pyc) gets created. When Python runs a .py file, it compiles the source code into bytecode. That bytecode is stored in the __pycache__ folder as .pyc files. 
+Add __pycache__/ to your .gitignore so they don’t get pushed to GitHub.
+They’ll be regenerated automatically whenever you run your app.
+
+# ------------------------------------------------------
 # When we run 'python -m venv venv' to create the Virtual environment, a folder named 'venv' gets created with few folders & files. Here are the details ->
 
 🗂️ Key Virtual Environment Folders
