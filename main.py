@@ -26,7 +26,7 @@ MOVIES = [
         "title": "Interstellar",
         "director": "Christopher Nolan",
         "year": 2014,
-        "genre": "Adventure",
+        "genre": "Sci-Fi",
         "rating": 8.6,
         "duration_minutes": 169,
     },
@@ -50,12 +50,30 @@ MOVIES = [
     },
 ]
 
-@app.get('/movies')
-async def getAllMovies():
-    return MOVIES
+# http://127.0.0.1:8000/movies
+# http://127.0.0.1:8000/movies?genre=Sci-Fi'
+
+
+@app.get("/movies")
+async def getMoviesByGenre(genre: str | None = None):
+    if genre:
+        movie_list = []
+        for movie in MOVIES:
+            if movie.get("genre").casefold() == genre.casefold():
+                movie_list.append(movie)
+        return movie_list
+    else:
+        return MOVIES
+
+
+# http://127.0.0.1:8000/movies/2
+
 
 @app.get("/movies/{id}")
-async def getMovie(id:int):
-    for movie in MOVIES:
-        if movie['id'] == id:
-            return movie
+async def getMoviesById(id: int | None = None):
+    if id:
+        for movie in MOVIES:
+            if movie.get("id") == id:
+                return movie
+    else:
+        return {"error": "Movie not found"}
