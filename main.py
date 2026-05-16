@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import FastAPI
+from fastapi import Body, FastAPI
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -14,6 +14,21 @@ class MovieModel(BaseModel):
     genre: str = Field("Minc", min_length=0, max_length=50)
     rating: float = Field(ge=0, le=5)
     duration_minutes: int = Field(gt=10)
+
+    # This controls the JSON format shown in FastAPI docs
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "id": 1,
+                "title": "Inception",
+                "director": "Christopher Nolan",
+                "year": 2010,
+                "genre": "Sci-Fi",
+                "rating": 4.8,
+                "duration_minutes": 148,
+            }
+        }
+    }
 
 
 MOVIES = [
@@ -84,10 +99,17 @@ async def getMoviesByGenre(genre: str | None = None):
 
 
 @app.get("/movies/{id}")
-async def getMoviesById(id: int | None = None):
+async def getMoviesById(id: int | None = None) -> MovieModel:
     if id:
         for movie in MOVIES:
             if movie.get("id") == id:
                 return movie
     else:
         return {"error": "Movie not found"}
+
+
+@app.post("/movies")
+async def addNewMovie(movie: MovieModel):
+    if movie:
+        MOVIES.append(movie)
+    return MOVIES
