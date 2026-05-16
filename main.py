@@ -1,6 +1,20 @@
+from datetime import datetime
 from fastapi import FastAPI
+from typing import Optional
+from pydantic import BaseModel, Field
 
 app = FastAPI()
+
+
+class MovieModel(BaseModel):
+    id: Optional[int] = Field(gt=0)
+    title: str = Field(..., min_length=0, max_length=100)
+    director: str = Field(min_length=0, max_length=50)
+    year: int = Field(ge=1900, lt=datetime.now().year)
+    genre: str = Field("Minc", min_length=0, max_length=50)
+    rating: float = Field(ge=0, le=5)
+    duration_minutes: int = Field(gt=10)
+
 
 MOVIES = [
     {
