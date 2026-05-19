@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import Body, FastAPI
+from fastapi import FastAPI, Query, Path, HTTPException
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -7,31 +7,30 @@ app = FastAPI()
 
 
 class MovieModel(BaseModel):
-    id: Optional[int] = Field(gt=0)
-    title: str = Field(..., min_length=0, max_length=100)
-    director: str = Field(min_length=0, max_length=50)
-    year: int = Field(ge=1900, lt=datetime.now().year)
-    genre: str = Field("Minc", min_length=0, max_length=50)
-    rating: float = Field(ge=0, le=5)
-    duration_minutes: int = Field(gt=10)
+    # id is optional, auto-generated
+    id: Optional[int] = Field(None, gt=0)
+    title: str = Field(..., min_length=1, max_length=100)
+    director: str = Field(..., min_length=1, max_length=50)
+    year: int = Field(..., ge=1900, lt=datetime.now().year)
+    genre: str = Field(..., min_length=1, max_length=50)
+    rating: float = Field(..., ge=0, le=10)
+    duration_minutes: int = Field(..., gt=10)
 
-    # This controls the JSON format shown in FastAPI docs
     model_config = {
         "json_schema_extra": {
             "example": {
-                "id": 1,
                 "title": "Inception",
                 "director": "Christopher Nolan",
                 "year": 2010,
                 "genre": "Sci-Fi",
-                "rating": 4.8,
+                "rating": 8.8,
                 "duration_minutes": 148,
             }
         }
     }
 
 
-MOVIES = [
+MOVIES: list[dict] = [
     {
         "id": 1,
         "title": "Inception",
@@ -79,37 +78,61 @@ MOVIES = [
     },
 ]
 
-# http://127.0.0.1:8000/movies
-# http://127.0.0.1:8000/movies?genre=Sci-Fi'
 
-
-@app.get("/movies")
-async def getMoviesByGenre(genre: str | None = None):
+@app.get("/movies", response_model=list[MovieModel])
+async def getMoviesByGenre(
+    genre: Optional[str] = Query(default=None, min_length=1, max_length=50)
+):
     if genre:
-        movie_list = []
-        for movie in MOVIES:
-            if movie.get("genre").casefold() == genre.casefold():
-                movie_list.append(movie)
-        return movie_list
-    else:
-        return MOVIES
-
-
-# http://127.0.0.1:8000/movies/2
-
-
-@app.get("/movies/{id}")
-async def getMoviesById(id: int | None = None) -> MovieModel:
-    if id:
-        for movie in MOVIES:
-            if movie.get("id") == id:
-                return movie
-    else:
-        return {"error": "Movie not found"}
-
-
-@app.post("/movies")
-async def addNewMovie(movie: MovieModel):
-    if movie:
-        MOVIES.append(movie)
+        return [
+            movie for movie in MOVIES if movie["genre"].casefold() == genre.casefold()
+        ]
     return MOVIES
+
+
+@app.get("/movies/{id}", response_model=MovieModel)
+async def getMovieById(id: int = Path(gt=0)):
+    for movie in MOVIES:
+        if movie["id"] == id:
+            return movie
+    raise HTTPException(status_code=404, detail="Movie not found")
+
+
+@app.post("/movies", response_model=list[MovieModel])
+async def addNewMovie(movie: MovieModel):
+    new_movie = setId(movie)
+    MOVIES.append(new_movie)
+    return MOVIES
+
+
+@app.put("/movies/{id}", response_model=list[MovieModel])
+async def updateMovie(id: int, movieParam: MovieModel):
+    for index, movie in enumerate(MOVIES):
+        if movie["id"] == id:
+            MOVIES[index] = movieParam.model_dump()
+            MOVIES[index]["id"] = id  # preserve id
+            return MOVIES
+    raise HTTPException(status_code=404, detail="Movie not found")
+
+
+@app.delete("/movies/{id}")
+async def deleteMovie(id: int):
+    for index, movie in enumerate(MOVIES):
+        if movie["id"] == id:
+            deleted = MOVIES.pop(index)
+            return {"message": "Movie deleted successfully!", "movie": deleted["title"]}
+    raise HTTPException(status_code=404, detail="Movie not found")
+
+
+def setId(movie: MovieModel) -> dict:
+    new_movie = movie.model_dump()
+    new_movie["id"] = len(MOVIES) + 1
+    return new_movie
+
+
+# 🔑 Rule of Thumb
+# If you’re storing Pydantic models → use movie.title.
+# Why: Pydantic models expose fields as attributes, so you can use dot notation like in JavaScript objects.
+
+# If you’re storing dicts → use movie["title"] or movie.get("title") (safer)
+# Why: Dicts in Python are like plain JS objects — you access values by key
