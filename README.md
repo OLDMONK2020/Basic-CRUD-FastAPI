@@ -81,8 +81,8 @@ BASIC-CRUD-FASTAPI/
 │   │   ├── __init__.py
 │   │   ├── v1/                     # Versioned API routes
 │   │   │   ├── __init__.py
-│   │   │   ├── movies_api.py
-│   │   │   ├── users_api.py
+│   │   │   ├── movies.py
+│   │   │   ├── users.py
 │   │   │   └── auth.py
 │   │   └── dependencies.py         # Common dependencies (auth, DB session)
 │   │
@@ -94,8 +94,8 @@ BASIC-CRUD-FASTAPI/
 │   │
 │   ├── models/                     # SQLAlchemy models
 │   │   ├── __init__.py
-│   │   ├── movie_model.py
-│   │   └── user_model.py
+│   │   ├── movie.py
+│   │   └── user.py
 │   │
 │   ├── schemas/                    # Pydantic models for request/response
 │   │   ├── __init__.py
