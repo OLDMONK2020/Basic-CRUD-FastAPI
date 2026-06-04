@@ -66,8 +66,11 @@ venv\Scripts\Activate.ps1
 
 
 #---------------------------------------------------------------------------------
-🏗️ Production‑Grade FastAPI Folder Structure
 
+
+## 🏗️ Production‑Grade FastAPI Folder Structure
+
+```text
 BASIC-CRUD-FASTAPI/
 │
 ├── app/                            # Main application package
@@ -127,4 +130,3 @@ BASIC-CRUD-FASTAPI/
 ├── requirements.txt                # Dependencies
 ├── README.md
 └── run.py                          # Entry point for running the app
-
