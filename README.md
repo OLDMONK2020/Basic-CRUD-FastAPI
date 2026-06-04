@@ -63,3 +63,68 @@ venv\Scripts\Activate.ps1
     ✅ How to Confirm It’s Active ->
     run 'Get-Command python'  (in powershell)
     If it points to your venv\Scripts\python.exe, then the virtual environment is active.
+
+
+#---------------------------------------------------------------------------------
+🏗️ Production‑Grade FastAPI Folder Structure
+
+BASIC-CRUD-FASTAPI/
+│
+├── app/                            # Main application package
+│   ├── __init__.py
+│   ├── main.py                     # FastAPI app instance and startup logic
+│   │
+│   ├── api/                        # Routers grouped by feature
+│   │   ├── __init__.py
+│   │   ├── v1/                     # Versioned API routes
+│   │   │   ├── __init__.py
+│   │   │   ├── movies_api.py
+│   │   │   ├── users_api.py
+│   │   │   └── auth.py
+│   │   └── dependencies.py         # Common dependencies (auth, DB session)
+│   │
+│   ├── core/                       # Core configuration and startup
+│   │   ├── __init__.py
+│   │   ├── config.py               # Settings, environment variables
+│   │   ├── logging_config.py       # Logging setup
+│   │   └── security.py             # JWT, password hashing, etc.
+│   │
+│   ├── models/                     # SQLAlchemy models
+│   │   ├── __init__.py
+│   │   ├── movie_model.py
+│   │   └── user_model.py
+│   │
+│   ├── schemas/                    # Pydantic models for request/response
+│   │   ├── __init__.py
+│   │   ├── movie_schema.py
+│   │   └── user_schema.py
+│   │
+│   ├── repositories/               # Database access layer
+│   │   ├── __init__.py
+│   │   ├── movie_repository.py
+│   │   └── user_repository.py
+│   │
+│   ├── services/                   # Business logic layer
+│   │   ├── __init__.py
+│   │   ├── movie_service.py
+│   │   └── user_service.py
+│   │
+│   ├── db/                         # Database connection and session
+│   │   ├── __init__.py
+│   │   └── database.py
+│   │
+│   ├── utils/                      # Helper functions (pagination, validation)
+│   │   ├── __init__.py
+│   │   └── helpers.py
+│   │
+│   └── tests/                      # Unit and integration tests
+│       ├── __init__.py
+│       ├── test_movies.py
+│       └── test_users.py
+│
+├── .env                            # Environment variables
+├── .gitignore
+├── requirements.txt                # Dependencies
+├── README.md
+└── run.py                          # Entry point for running the app
+
