@@ -21,3 +21,33 @@ class Movie(MovieBase):
 
     class Config:
         from_attributes = True
+
+
+"""
+🟢
+
+👉 class MovieCreate(MovieBase): pass
+
+This defines a schema for creating a new movie.
+It inherits all fields from MovieBase (like title, director, year, etc.).
+The pass means “no extra fields” — it’s just a direct reuse of MovieBase.
+
+Why? 
+When you create a new movie, you don’t provide an id (the database generates it). So MovieCreate is the input schema for POST requests.
+
+👉 class Movie(MovieBase): id: int
+
+This defines the schema for a movie object returned from the API.
+It inherits all fields from MovieBase and adds an id field.
+
+Why? 
+When you fetch movies from the database, each one has a unique id. So this schema is used for responses (GET requests).
+
+👉 class Config: from_attributes = True
+
+This is a Pydantic v2 feature.
+It tells Pydantic: “You can build this schema directly from ORM objects (SQLAlchemy models).”
+Without this, if you tried to return a SQLAlchemy Movie object from your API, FastAPI wouldn’t know how to convert it into a Pydantic schema.
+
+🔴
+"""
